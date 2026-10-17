@@ -1,0 +1,33 @@
+<svg width="760" height="920" viewBox="0 0 760 920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="380" y1="0" x2="380" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDEBE5"/>
+      <stop offset="0.48" stop-color="#F3D6B8"/>
+      <stop offset="1" stop-color="#B0C9C1"/>
+    </linearGradient>
+    <linearGradient id="water" x1="380" y1="490" x2="380" y2="920" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7CA49E"/>
+      <stop offset="1" stop-color="#234E4B"/>
+    </linearGradient>
+    <linearGradient id="mountain" x1="377" y1="228" x2="377" y2="619" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#718B85"/>
+      <stop offset="1" stop-color="#2C5550"/>
+    </linearGradient>
+  </defs>
+  <rect width="760" height="920" rx="320" fill="url(#sky)"/>
+  <circle cx="554" cy="184" r="74" fill="#F4B56B" opacity="0.92"/>
+  <path d="M-35 527 153 331l81 91 147-215 224 307 90-101 103 115v127H-35V527Z" fill="#A8B9B2"/>
+  <path d="m205 454 176-247 71 97-51-35-24 54-31-40-141 171Z" fill="#F8F3E9" opacity="0.84"/>
+  <path d="M-40 570 126 423l113 99 119-174 138 181 92-72 214 147v106H-40V570Z" fill="url(#mountain)"/>
+  <path d="m273 472 85-124 45 59-43-28-22 47-18-20-47 66Z" fill="#ECF1EB" opacity="0.7"/>
+  <path d="M0 582c127-28 244-22 351 17 106 39 243 43 409 12v309H0V582Z" fill="url(#water)"/>
+  <path d="M23 642c162-20 274-6 367 18 116 29 221 25 347 4" stroke="#C7DBD2" stroke-width="10" opacity="0.45"/>
+  <path d="M82 728c102-13 188-7 272 13 122 29 216 29 336 7" stroke="#B2CEC3" stroke-width="7" opacity="0.28"/>
+  <g fill="#173E3A">
+    <path d="m80 620 39-91 39 91h-24v67H104v-67H80Z"/>
+    <path d="m630 609 45-112 46 112h-28v78h-36v-78h-27Z"/>
+    <path d="m13 640 28-72 29 72H52v52H31v-52H13Z"/>
+    <path d="m575 632 29-73 30 73h-18v51h-23v-51h-18Z"/>
+  </g>
+  <path d="M454 816c39-34 71-51 95-51 23 0 49 16 77 47" stroke="#D8C39F" stroke-width="7" stroke-linecap="round" opacity="0.55"/>
+</svg>
