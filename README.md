@@ -19,7 +19,7 @@ Tasks 1–4 provide tours, authentication, the booking flow and staff reservatio
 - React tours, tour details, login, registration and account pages
 - Jest/Supertest schema and API integration tests
 
-Customer booking forms, confirmation screens, My Bookings and the staff reservation dashboard are implemented. Permanent MongoDB/Atlas configuration and deployment are deferred. See [the API and database guide](docs-api.md) for setup, examples and staff-account creation.
+Customer booking forms, confirmation screens, My Bookings and the staff reservation dashboard are implemented. Local Atlas connectivity and a private test staff login have been verified; credentials are not in this repository. Production hosting support is implemented, but Render authorization, network configuration and live deployment verification remain pending. See [the API and database guide](docs-api.md) for setup, examples and staff-account creation.
 
 ## Try Task 4 locally
 
@@ -35,6 +35,8 @@ This account exists only in `dev:demo`, which is blocked in production. Staff ca
 
 ## Website completion and launch checklist
 
+Deployment preparation: [DEPLOYMENT.md](DEPLOYMENT.md) and `render.yaml` provide a single-origin Node/Express + React setup for Render. `npm start` now runs the API server (and serves the built website in production); use `npm run dev` for local development. Account authorization, hosting environment secrets, Atlas outbound-IP allowlisting and live verification still need to be completed before a live deployment can be claimed.
+
 Real destination photography now appears in the hero, tour cards/details, sign-in/register pages and editorial travel sections. Six source photos are stored locally as responsive WebP assets; no external image requests are required. See [PHOTO-CREDITS.md](PHOTO-CREDITS.md) and the footer's Photography Credits page. Destination imagery does not change tour inclusions or database records.
 
 Permanent database ke simple steps: [DATABASE-SETUP.md](DATABASE-SETUP.md). Existing local `.env` overwrite na karo; Atlas use karte waqt `npm run dev`, not `dev:demo`.
@@ -45,10 +47,10 @@ The website now includes URL-backed tour search, destination and availability fi
 
 Before production launch, the following work remains:
 
-- Configure permanent MongoDB/Atlas, environment secrets, backups and the real staff account (deferred at the user's request).
+- Configure hosting environment secrets and Atlas outbound-IP access, backups and the real staff account. Local Atlas setup is complete; no private values are tracked.
 - Supply verified agency contact details and business-approved privacy, cancellation/refund and travel terms. The help page describes current app behavior; it is not a legal policy.
 - Run real-browser/mobile acceptance checks, including a complete customer-to-staff reservation flow.
-- Create/push the GitHub repository, choose hosting, configure same-origin API/cookies and trusted proxies, then verify the live deployment.
+- The GitHub repository is created and initial source pushed. Finish Render account authorization and the live deployment, then verify same-origin API/cookies and proxy client IPs.
 - Finalize hand-over documentation and rerun checks against the deployment configuration.
 
 Online payments, email delivery and password-reset delivery are not implemented or required by the supplied brief. Add these only if the agency requests them; this demo does not pretend they are connected.
