@@ -1,5 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAuth } from '../context/useAuth.js';
 
 function LogoMark() {
@@ -16,6 +16,8 @@ function LogoMark() {
 function Header() {
   const { user, loading, logout } = useAuth();
   const [error, setError] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuButton = useRef(null);
   async function signOut() {
     try {
       await logout();
@@ -25,37 +27,64 @@ function Header() {
     }
   }
   return (
-    <header className="site-header">
+    <header
+      className="site-header"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && menuOpen) {
+          setMenuOpen(false);
+          menuButton.current?.focus();
+        }
+      }}
+    >
       <Link className="brand" to="/" aria-label="WanderWays home">
         <LogoMark />
         <span>WanderWays</span>
       </Link>
 
-      <nav className="main-nav" aria-label="Primary navigation">
-        <NavLink to="/tours">Tours</NavLink>
-        <a href="/#why-us">Why us</a>
-        <NavLink to="/help">Help & FAQ</NavLink>
-      </nav>
+      <button
+        ref={menuButton}
+        type="button"
+        className="mobile-menu-toggle"
+        aria-expanded={menuOpen}
+        aria-controls="header-navigation"
+        onClick={() => setMenuOpen(!menuOpen)}
+      >
+        {menuOpen ? 'Close menu' : 'Menu'}
+        <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+      </button>
+      <div
+        id="header-navigation"
+        className={`header-navigation${menuOpen ? ' is-open' : ''}`}
+        onClick={(event) => {
+          if (event.target.closest('a, button')) setMenuOpen(false);
+        }}
+      >
+        <nav className="main-nav" aria-label="Primary navigation">
+          <NavLink to="/tours">Tours</NavLink>
+          <a href="/#why-us">Why us</a>
+          <NavLink to="/help">Help & FAQ</NavLink>
+        </nav>
 
-      <div className="auth-navigation">
-        {loading ? (
-          <span role="status">Loading…</span>
-        ) : user ? (
-          <>
-            <Link className="workspace-link" to={user.role === 'staff' ? '/staff' : '/bookings'}>
-              {user.role === 'staff' ? 'Dashboard' : 'My bookings'}
+        <div className="auth-navigation">
+          {loading ? (
+            <span role="status">Loading…</span>
+          ) : user ? (
+            <>
+              <Link className="workspace-link" to={user.role === 'staff' ? '/staff' : '/bookings'}>
+                {user.role === 'staff' ? 'Dashboard' : 'My bookings'}
+              </Link>
+              <Link to="/account">{user.name.split(' ')[0]}</Link>
+              <button className="button button-small button-outline" onClick={signOut}>
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link className="button button-small button-outline" to="/login">
+              Sign in
             </Link>
-            <Link to="/account">{user.name.split(' ')[0]}</Link>
-            <button className="button button-small button-outline" onClick={signOut}>
-              Sign out
-            </button>
-          </>
-        ) : (
-          <Link className="button button-small button-outline" to="/login">
-            Sign in
-          </Link>
-        )}
-        {error && <span role="alert">{error}</span>}
+          )}
+          {error && <span role="alert">{error}</span>}
+        </div>
       </div>
     </header>
   );

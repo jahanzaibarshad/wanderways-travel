@@ -166,7 +166,12 @@ export default function StaffDashboardPage() {
         data &&
         !error && (
           <>
-            <div className="table-scroll">
+            <div
+              className="table-scroll"
+              role="region"
+              aria-label="Reservations table, scroll horizontally to see all columns"
+              tabIndex={0}
+            >
               <table className="reservations-table">
                 <caption>{data.pagination.total} matching reservation(s)</caption>
                 <thead>

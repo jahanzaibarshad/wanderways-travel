@@ -1,0 +1,185 @@
+.header-navigation {
+  display: contents;
+}
+
+.mobile-menu-toggle {
+  display: none;
+}
+
+.auth-navigation a,
+.booking-details dd,
+.dashboard-heading,
+.reservation-summary,
+.footer-contact {
+  overflow-wrap: anywhere;
+}
+
+.hero > *,
+.journey-layout > *,
+.auth-section > *,
+.help-layout > *,
+.tour-filters > *,
+.dashboard-filters > *,
+.site-footer > * {
+  min-width: 0;
+}
+
+.table-scroll {
+  max-width: 100%;
+  overscroll-behavior-x: contain;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid var(--orange-dark);
+  outline-offset: 3px;
+}
+
+@media (min-width: 761px) and (max-width: 1100px) {
+  .tour-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .auth-section {
+    gap: 32px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .site-header {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block: 16px;
+  }
+
+  .mobile-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 14px;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+  }
+
+  .header-navigation {
+    display: none;
+    flex-basis: 100%;
+    min-width: 0;
+  }
+
+  .header-navigation.is-open {
+    display: grid;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+
+  .main-nav {
+    display: grid;
+    gap: 4px;
+  }
+
+  .main-nav a,
+  .auth-navigation a,
+  .auth-navigation button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .auth-navigation {
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+
+  .auth-navigation [role='alert'] {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  input:not([type='checkbox']),
+  select,
+  textarea {
+    min-width: 0;
+    max-width: 100%;
+    font-size: 16px;
+  }
+
+  .password-toggle,
+  .row-actions button {
+    min-height: 44px;
+  }
+
+  .dashboard-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard-stats div {
+    padding: 18px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .departure-list li {
+    flex-wrap: wrap;
+    gap: 8px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .site-header {
+    width: calc(100% - 32px);
+  }
+
+  .brand {
+    font-size: 1.3rem;
+    gap: 7px;
+  }
+
+  .auth-card,
+  .reservation-card,
+  .reservation-summary,
+  .help-card,
+  .tour-filters {
+    padding: 20px;
+  }
+
+  .auth-intro h1,
+  .confirmation-card h1 {
+    font-size: clamp(2.3rem, 10vw, 3rem);
+  }
+
+  .booking-details div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .page-actions > .button {
+    width: 100%;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .hero-stats div,
+  .hero-stats div + div {
+    min-width: 0;
+    padding-inline: 8px;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-stats dt {
+    font-size: 1.5rem;
+  }
+}
