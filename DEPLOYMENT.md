@@ -4,9 +4,9 @@ This deployment keeps the existing MERN app: one Express service serves the buil
 
 ## 1. Connect your account and repository
 
-Sign in to [Render](https://dashboard.render.com/) using GitHub and authorize access to `jahanzaibarshad/wanderways-travel`. Alternatively, install/authorize the Render integration in the assistant so it can continue the deployment with your account.
+Sign in to [Render](https://dashboard.render.com/) using GitHub and authorize access to the project repository.
 
-Never paste a Render API key, database password, full Atlas URI or staff password into chat. Do not import all of the local `.env` settings into hosting.
+Keep hosting API keys, database credentials and staff passwords private. Configure only the documented hosting environment values rather than importing all local development settings.
 
 ## 2. Create one free web service
 
@@ -36,7 +36,7 @@ Do not create a Render Postgres database, disk, paid service or separate static 
 
 Render supplies `RENDER_EXTERNAL_URL`; the app uses it as its allowed client origin when `CLIENT_URL` is unset. For a custom domain or a non-Render host, set `CLIENT_URL` to the exact public HTTPS origin with no trailing slash, e.g. `https://your-domain.example`. Do not leave it pointing to localhost.
 
-Render supplies `PORT`; don't copy the local `PORT=5000`. Don't add `STAFF_PASSWORD`, demo flags, `MONGOMS_DOWNLOAD_DIR`, `TEMP` or Windows cache paths to production. Demo database/account seeding is not run on normal startup.
+Render supplies `PORT`; do not copy the local `PORT=5000`. Do not add `STAFF_PASSWORD`, test database cache settings, `TEMP` or Windows cache paths to production. Database/account seeding is never run on startup.
 
 ## 4. Allow the service to connect to Atlas
 

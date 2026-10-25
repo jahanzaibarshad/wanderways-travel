@@ -1,7 +1,9 @@
 import { describe, test, expect } from '@jest/globals';
 import request from 'supertest';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 import { createApp } from '../src/app.js';
+import { connectDatabase } from '../src/config/database.js';
 
 const clientDirectory = fileURLToPath(new URL('./fixtures/site/', import.meta.url));
 const options = {
@@ -13,6 +15,26 @@ const options = {
 const app = createApp(options);
 
 describe('Production single-origin hosting', () => {
+  test('rejects compressed request bodies before decompression', async () => {
+    const response = await request(app)
+      .post('/api/auth/login')
+      .set('Origin', options.clientUrl)
+      .set('Content-Type', 'application/json')
+      .set('Content-Encoding', 'gzip')
+      .send(gzipSync(Buffer.from('{}')));
+    expect(response.status).toBe(415);
+    expect(response.body.message).toContain('content encoding');
+  });
+  test('requires an explicitly configured database instead of starting a temporary one', async () => {
+    const originalUri = process.env.MONGODB_URI;
+    delete process.env.MONGODB_URI;
+    try {
+      await expect(connectDatabase()).rejects.toThrow('MONGODB_URI is required');
+    } finally {
+      if (originalUri === undefined) delete process.env.MONGODB_URI;
+      else process.env.MONGODB_URI = originalUri;
+    }
+  });
   test.each([
     '/',
     '/tours',

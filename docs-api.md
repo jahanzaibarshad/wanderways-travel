@@ -1,19 +1,17 @@
-# Tasks 2–4: database, API, authentication and booking dashboard
+# WanderWays API reference
 
 Development base URL: `http://127.0.0.1:5000/api`. React uses `/api` through the Vite proxy so its HttpOnly cookie stays on the same origin.
 
 ## Local database
 
-Run `npm run dev:demo` from the root for a quick preview. It downloads a real MongoDB binary and starts an isolated, temporary replica set with five seeded tours. Accounts and bookings disappear when the server stops. Demo mode is blocked in production.
-
-For persistent data, copy `server/.env.example` to `server/.env`, configure `MONGODB_URI` for Atlas or a local replica set, and set a unique `JWT_SECRET` of at least 32 characters. Standalone MongoDB cannot run the booking transaction. Restart the server after changing environment variables.
+On first setup, copy `server/.env.example` to `server/.env` without overwriting existing settings. Configure `MONGODB_URI` for Atlas or a local replica set and a unique `JWT_SECRET` of at least 32 characters. Standalone MongoDB cannot run booking transactions. Restart the server after changing environment variables. The application requires this configured database and never creates one automatically.
 
 ```powershell
 npm run seed --workspace server
 npm run dev
 ```
 
-Seeding inserts missing tours by slug without deleting records or resetting booked seats. Departures start 14, 28 and 42 days after the initial seed date at 08:00 UTC, with 12 seats each. Prices are whole PKR amounts per guest.
+The optional seed command inserts sample tours by slug without deleting records or resetting booked seats. It is intended for new development databases and does not run at startup. Sample departures start 14, 28 and 42 days after the initial seed date at 08:00 UTC, with 12 seats each. Prices are whole PKR amounts per guest.
 
 ## Routes
 
@@ -57,7 +55,7 @@ npm run create-staff --workspace server
 
 Staff passwords require 12–72 bytes. Existing accounts are never overwritten or promoted. Remove `STAFF_PASSWORD` afterwards. Staff log in using the same React form and open the Dashboard link; `/staff/session` also verifies staff-only access.
 
-The React staff dashboard is available at `/staff`. Demo mode creates `staff@wanderways.example` with password `WanderWays-Staff42!`; this account is never seeded in production. Use the private account creation command above for persistent environments.
+The React staff dashboard is available at `/staff`. There are no default staff credentials. Provision accounts explicitly with the command above and keep passwords private.
 
 ## Booking
 
@@ -94,7 +92,7 @@ $bookingBody = @{
 Invoke-RestMethod "$base/bookings" -Method Post -ContentType 'application/json' -Body $bookingBody -WebSession $travellerSession
 ```
 
-## Task 4: booking flow and staff management
+## Booking flow and staff management
 
 Customers select an upcoming departure, enter guest/contact details and review the server-calculated price. Confirmation is available at `/bookings/:id/confirmation`; `/bookings` shows only that customer's reservations. No payment is collected by this flow. Pending and confirmed reservations both hold seats.
 
@@ -102,12 +100,10 @@ Customers select an upcoming departure, enter guest/contact details and review t
 
 `PATCH /staff/bookings/:id/status` accepts `{ "status": "confirmed" }` or `{ "status": "cancelled" }`. Cancellation releases seats in the same transaction as the status change. Repeating a completed transition is safe; cancelled bookings cannot be reopened. Customers cannot call these endpoints. Cancellation asks for confirmation in the dashboard.
 
-Task 4 uses the existing models and temporary demo database. Permanent MongoDB/Atlas configuration and production deployment remain deferred.
-
 ## Errors and tests
 
-The production dependency audit is clean. The full audit currently reports 19 moderate advisories through Jest's development-only `sprintf-js` dependency chain. The proposed automatic fix downgrades Jest across major versions; it has not been applied. Recheck this chain before final hand-over.
+Run `npm audit --omit=dev` for the production dependency report and review development dependency advisories separately. Audit results change over time; do not apply forced major-version changes without regression testing.
 
-JSON errors include `message`; validation errors also include `errors` by field. Status codes: 400 invalid input, 401 missing/invalid/expired session, 403 role/origin rejected, 404 missing tour, 409 duplicate email or unavailable departure, 429 rate limit. Unexpected errors do not expose server details.
+JSON requests are limited to 10 KB; compressed request bodies are rejected with 415. JSON errors include `message`; validation errors also include `errors` by field. Other status codes: 400 invalid input, 401 missing/invalid/expired session, 403 role/origin rejected, 404 missing tour, 409 duplicate email or unavailable departure, 413 oversized body, 429 rate limit and 503 unavailable database health. Unexpected errors do not expose server details.
 
-`npm test` runs 39 React Testing Library/Vitest tests for the customer flow, validation, ownership guards, staff actions, tour discovery, homepage data, FAQs, sign-in redirects, printing, route accessibility, network timeouts, retries, pagination recovery and destination photography, plus 46 Jest/Supertest tests for API behavior and production hosting. Database integration tests use a separate temporary MongoDB replica set. Backend coverage includes JWT cookies, roles, booking ownership, concurrent reservations, idempotent confirmation, concurrent cancellation and rollback. These are component/API integration tests, not browser end-to-end tests. Tests never connect to `MONGODB_URI`. The first backend run requires a MongoDB binary download. Set `MONGOMS_DOWNLOAD_DIR` to move its cache to another drive and `DEMO_DB_ROOT` for demo database storage (the directory must exist). Tests use the shell's `TEMP` and `TMP` for temporary files on Windows. Demo mode uses a regular Node process; restart manually after server-code edits.
+`npm test` runs 39 React Testing Library/Vitest tests for the customer flow, validation, ownership guards, staff actions, tour discovery, homepage data, FAQs, sign-in redirects, printing, route accessibility, network timeouts, retries, pagination recovery and destination photography, plus 48 Jest/Supertest tests for API behavior and production hosting. Database integration tests use a separate temporary MongoDB replica set. Backend coverage includes JWT cookies, roles, booking ownership, concurrent reservations, idempotent confirmation, concurrent cancellation and rollback. These are component/API integration tests, not browser end-to-end tests. Tests never connect to `MONGODB_URI`. The first backend run requires a MongoDB binary download. Set `MONGOMS_DOWNLOAD_DIR` to move its cache to another drive and `TEST_DB_ROOT` for isolated test database storage (the directory must exist). Tests use the shell's `TEMP` and `TMP` for temporary files on Windows.

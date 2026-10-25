@@ -13,7 +13,7 @@ function Footer() {
         <Link to="/tours">Explore journeys</Link>
         <Link to="/help">Booking help & FAQ</Link>
         <Link to="/photo-credits">Photography credits</Link>
-        <small>Demo website · no online payments</small>
+        <small>Tour reservations · no online payments</small>
       </div>
       <p className="copyright">© {new Date().getFullYear()} WanderWays Travel</p>
     </footer>

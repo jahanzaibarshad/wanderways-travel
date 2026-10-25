@@ -25,10 +25,6 @@ const questions = [
     'How do I change or cancel a booking?',
     'Customers cannot change or cancel a reservation directly in this version. A staff member can cancel it from the dashboard, which releases its seats. Keep your booking reference when discussing a reservation with staff.',
   ],
-  [
-    'What happens to demo bookings?',
-    'Local demo mode uses a temporary database. Accounts and reservations disappear when the demo server stops. Do not use real personal or payment details while testing.',
-  ],
 ];
 
 export default function HelpPage() {
@@ -61,8 +57,8 @@ export default function HelpPage() {
             Open your account →
           </Link>
           <p className="field-hint">
-            Agency contact details will be added before launch. No support inbox is connected in
-            this demo.
+            Keep your booking reference handy. Your account shows your latest reservation details
+            and status.
           </p>
         </aside>
       </div>

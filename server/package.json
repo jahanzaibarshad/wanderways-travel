@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
-    "dev:demo": "node src/server.js --demo",
     "start": "node src/server.js",
     "seed": "node scripts/seed.js",
     "create-staff": "node scripts/create-staff.js",

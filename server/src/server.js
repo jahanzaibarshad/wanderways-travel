@@ -1,15 +1,7 @@
 import 'dotenv/config';
 import app from './app.js';
 import { connectDatabase } from './config/database.js';
-import { seedTours } from './data/seed.js';
-import { seedDemoStaff } from './data/demo-staff.js';
-
-const demo = process.argv.includes('--demo');
-const closeDatabase = await connectDatabase({ demo });
-if (demo) {
-  await seedTours();
-  await seedDemoStaff();
-}
+const closeDatabase = await connectDatabase();
 const port = Number(process.env.PORT) || 5000;
 const server = app.listen(port, '0.0.0.0', () => {
   console.log(`WanderWays API listening on http://localhost:${port}`);

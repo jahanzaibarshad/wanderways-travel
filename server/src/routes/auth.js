@@ -2,6 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
+import { randomBytes } from 'node:crypto';
 import { z } from 'zod';
 import User from '../models/User.js';
 import { authenticate } from '../middleware/auth.js';
@@ -42,7 +43,8 @@ function sendSession(response, user, status = 200) {
     .status(status)
     .json({ user: { id: user._id, name: user.name, email: user.email, role: user.role } });
 }
-const dummyHash = bcrypt.hashSync('timing-comparison-placeholder', 12);
+// Keep password comparison work consistent for unknown email addresses.
+const dummyHash = bcrypt.hashSync(randomBytes(32).toString('hex'), 12);
 
 router.post('/register', limiter, validate(registration), async (request, response) => {
   const { name, email, password } = request.body;

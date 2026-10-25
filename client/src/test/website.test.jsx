@@ -192,13 +192,14 @@ describe('Website completion', () => {
     await screen.findByText('Hunza Mountains');
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
-  it('provides expandable booking help without claiming a connected support inbox', async () => {
+  it('provides expandable booking guidance without development-only notices', async () => {
     const user = userEvent.setup();
     preview(<HelpPage />);
     await user.click(screen.getByText('Do I pay online?'));
     expect(screen.getByText('Do I pay online?').closest('details')).toHaveAttribute('open');
     expect(screen.getByText(/does not collect payments or card details/)).toBeInTheDocument();
-    expect(screen.getByText(/No support inbox is connected/)).toBeInTheDocument();
+    expect(screen.getByText(/Keep your booking reference handy/)).toBeInTheDocument();
+    expect(screen.queryByText('What happens to demo bookings?')).not.toBeInTheDocument();
   });
   it('toggles password visibility without submitting', async () => {
     const login = vi.fn();

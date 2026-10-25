@@ -1,171 +1,124 @@
-# WanderWays Travel Online Booking Platform
+# WanderWays Travel
 
-WanderWays is a MERN application for browsing curated tours, reserving tour slots, and managing reservations through a staff dashboard.
+A MERN tour-booking application with customer reservations and role-protected staff management.
 
-## Current milestone
+## Features
 
-Tasks 1–4 provide tours, authentication, the booking flow and staff reservations:
+- Tour search, destination/availability filters and price/duration sorting.
+- Real destination photography with responsive images and local fallbacks.
+- JWT authentication using HttpOnly cookies and database-checked customer/staff roles.
+- Booking forms, server-calculated prices, confirmation references and printable reservation details.
+- Customer-owned booking history and staff reservation search, filtering and pagination.
+- Transactional seat allocation, confirmation and cancellation without overselling or duplicate seat release.
+- Responsive layouts, keyboard navigation and automated component/API/deployment tests.
 
-- npm-workspaces monorepo with separate `client` and `server` applications
-- responsive React landing page with a clear tour call-to-action
-- Express API foundation with a health endpoint
-- integration tests for health, tours, authentication and booking capacity
-- shared ESLint and Prettier configuration
-- GitHub Actions workflow for formatting, linting, tests, and production build
+Online payments, email delivery and password recovery are not implemented. This application reserves seats and does not collect card details.
 
-- MongoDB Tour, Booking and User models with a safe five-tour seed script
-- public tours API and transaction-protected customer booking endpoint
-- JWT login/register with HttpOnly cookies and customer/staff role checks
-- React tours, tour details, login, registration and account pages
-- Jest/Supertest schema and API integration tests
+## Requirements
 
-Customer booking forms, confirmation screens, My Bookings and the staff reservation dashboard are implemented. Local Atlas connectivity and a private test staff login have been verified; credentials are not in this repository. Production hosting support is implemented, but Render authorization, network configuration and live deployment verification remain pending. See [the API and database guide](docs-api.md) for setup, examples and staff-account creation.
+Node.js 20.19+ or 22.12+, npm and MongoDB Atlas or a MongoDB replica set. Standalone MongoDB cannot execute booking transactions.
 
-## Try Task 4 locally
+## Development setup
 
-Run `npm run dev:demo` and open `http://127.0.0.1:5174/tours`. Register a customer, select a journey and scheduled departure, enter guests/contact information, and submit. Your reference and status appear on the confirmation page and in My Bookings. No online payment is taken.
+1. Run `npm ci` from the repository root.
+2. On first setup only, copy `server/.env.example` to `server/.env`. Do not overwrite an existing environment file.
+3. Configure `MONGODB_URI`, a unique `JWT_SECRET` of at least 32 characters and `CLIENT_URL=http://127.0.0.1:5174`. The frontend defaults to the same-origin `/api` proxy.
+4. Run `npm run dev` and open http://127.0.0.1:5174.
+5. API readiness: http://127.0.0.1:5000/api/health.
 
-To try staff features, sign out and sign in with this **temporary demo account**:
+Generate a JWT secret locally; keep its output private:
 
-- Email: `staff@wanderways.example`
-- Password: `WanderWays-Staff42!`
-- Dashboard: `http://127.0.0.1:5174/staff`
+```sh
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
 
-This account exists only in `dev:demo`, which is blocked in production. Staff can search by reference/customer/tour, filter by status, paginate, refresh and confirm/cancel reservations. Cancellation releases seats exactly once; cancelled reservations cannot be reopened. Demo accounts and bookings disappear when the server stops. Permanent database setup remains a later step.
+There are no built-in staff accounts, public passwords or automatically created customer accounts.
 
-## Website completion and launch checklist
+## Staff provisioning
 
-Deployment preparation: [DEPLOYMENT.md](DEPLOYMENT.md) and `render.yaml` provide a single-origin Node/Express + React setup for Render. `npm start` now runs the API server (and serves the built website in production); use `npm run dev` for local development. Account authorization, hosting environment secrets, Atlas outbound-IP allowlisting and live verification still need to be completed before a live deployment can be claimed.
+Provide `STAFF_NAME`, `STAFF_EMAIL` and a unique `STAFF_PASSWORD` (12–72 UTF-8 bytes) through private environment settings, then run:
 
-Real destination photography now appears in the hero, tour cards/details, sign-in/register pages and editorial travel sections. Six source photos are stored locally as responsive WebP assets; no external image requests are required. See [PHOTO-CREDITS.md](PHOTO-CREDITS.md) and the footer's Photography Credits page. Destination imagery does not change tour inclusions or database records.
+```sh
+npm run create-staff --workspace server
+```
 
-Permanent database ke simple steps: [DATABASE-SETUP.md](DATABASE-SETUP.md). Existing local `.env` overwrite na karo; Atlas use karte waqt `npm run dev`, not `dev:demo`.
+Existing accounts are never overwritten or promoted. Remove `STAFF_PASSWORD` from the provisioning environment after success; retain credentials in a password manager. Staff use the normal login form and access `/staff`.
 
-Final reliability pass adds a customer bookings refresh, journey retry, 15-second request timeout, readable offline errors, uncertain-booking guidance and staff pagination recovery. Database configuration is unchanged.
+## Optional sample tour data
 
-The website now includes URL-backed tour search, destination and availability filters, price/duration sorting, real API-powered homepage cards, upcoming departure information, booking FAQs, role-aware sign-in redirects, password visibility controls, printable reservation details, page titles, keyboard skip navigation and reduced-motion support. The existing MERN stack and visual design are preserved. Placeholder agency email and unsupported guest/rating claims have been removed.
+For a new development database only:
 
-Before production launch, the following work remains:
+```sh
+npm run seed --workspace server
+```
 
-- Configure hosting environment secrets and Atlas outbound-IP access, backups and the real staff account. Local Atlas setup is complete; no private values are tracked.
-- Supply verified agency contact details and business-approved privacy, cancellation/refund and travel terms. The help page describes current app behavior; it is not a legal policy.
-- Run real-browser/mobile acceptance checks, including a complete customer-to-staff reservation flow.
-- The GitHub repository is created and initial source pushed. Finish Render account authorization and the live deployment, then verify same-origin API/cookies and proxy client IPs.
-- Finalize hand-over documentation and rerun checks against the deployment configuration.
+The explicit seed inserts missing sample tours by slug without deleting records, resetting capacity or altering bookings. It never runs at startup or deployment. Replace sample itineraries with agency-approved data before accepting real customers.
 
-Online payments, email delivery and password-reset delivery are not implemented or required by the supplied brief. Add these only if the agency requests them; this demo does not pretend they are connected.
+## Production startup
 
-## Tech stack
+```sh
+npm ci --include=dev
+npm run build
+npm prune --omit=dev
+npm start
+```
 
-- React and Vite
-- Node.js and Express
-- MongoDB and Mongoose
-- JWT authentication, bcrypt, Zod, Helmet and rate limiting
-- Jest/Supertest and React Testing Library/Vitest
+Configure `NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL` as the exact public HTTPS origin and the appropriate numeric `TRUST_PROXY` hop count. The hosting provider supplies `PORT`. Express serves the built React website and API on one origin; Vite is not a production server.
 
-> The original brief mentions Create React App. This repository uses Vite because Create React App is deprecated for new React applications. The client still provides `npm start` for brief compatibility.
+The optional `render.yaml` does not create a hosting service or configure Atlas access by itself. On Render, `RENDER_EXTERNAL_URL` supplies the allowed origin when `CLIENT_URL` is unset. See [deployment and operations](DEPLOYMENT.md).
 
-## Prerequisites
+## Verification
 
-- Node.js 20.19+ or 22.12+
-- npm
-- Git
+```sh
+npm run format:check
+npm run lint
+npm test
+npm run build
+npm audit --omit=dev
+```
 
-## Local setup
+Database integration tests use an isolated temporary replica set and never connect to the application's configured database. A MongoDB test binary is downloaded on the first run. Component/API tests do not replace real-browser, mobile or hosted acceptance testing.
 
-1. Install all workspace dependencies from the repository root:
+## Commands
 
-   ```bash
-   npm install
-   ```
+| Command                                   | Purpose                                               |
+| ----------------------------------------- | ----------------------------------------------------- |
+| `npm run dev`                             | Run the development frontend and API                  |
+| `npm start`                               | Start the API; serve the frontend build in production |
+| `npm run build`                           | Build the React frontend                              |
+| `npm run create-staff --workspace server` | Provision staff from private environment settings     |
+| `npm run seed --workspace server`         | Explicitly insert optional sample tours               |
+| `npm test`                                | Run frontend and backend tests                        |
+| `npm run lint`                            | Check source code                                     |
+| `npm run format:check`                    | Verify formatting                                     |
 
-2. Create local environment files:
-
-   PowerShell:
-
-   ```powershell
-   Copy-Item client/.env.example client/.env
-   Copy-Item server/.env.example server/.env
-   ```
-
-   Bash:
-
-   ```bash
-   cp client/.env.example client/.env
-   cp server/.env.example server/.env
-   ```
-
-3. Start the React client and Express server together:
-
-   ```bash
-   npm run dev:demo
-   ```
-
-   Demo mode uses temporary MongoDB and seeds five tours. Records disappear when the server stops. For persistent data, configure `MONGODB_URI` and `JWT_SECRET`, run `npm run seed --workspace server`, then use `npm run dev`. See [database setup](docs-api.md).
-
-4. Open the applications:
-
-   - Client: `http://127.0.0.1:5174`
-   - API: `http://localhost:5000`
-   - Health check: `http://localhost:5000/api/health`
-
-## Scripts
-
-| Command                                   | Purpose                                                      |
-| ----------------------------------------- | ------------------------------------------------------------ |
-| `npm run dev`                             | Start client and server in development mode                  |
-| `npm run dev:demo`                        | Start both with temporary, automatically seeded MongoDB      |
-| `npm run seed --workspace server`         | Safely insert five sample tours into the configured database |
-| `npm run create-staff --workspace server` | Create a staff account from private environment settings     |
-| `npm start`                               | Alias for the development command                            |
-| `npm run build`                           | Create the production client build                           |
-| `npm run lint`                            | Check client and server source code                          |
-| `npm run format`                          | Format the repository with Prettier                          |
-| `npm run format:check`                    | Verify repository formatting                                 |
-| `npm test`                                | Run tests in workspaces that provide a test script           |
-
-## Project structure
+## Structure
 
 ```text
-.
-|-- client/                 React front end
-|   |-- src/
-|   |   |-- assets/
-|   |   `-- components/
-|   `-- .env.example
-|-- server/                 Express API
-|   |-- src/
-|   `-- .env.example
-|-- .github/workflows/      Continuous integration
-|-- eslint.config.js
-`-- package.json            Root workspace scripts
+client/                 React/Vite frontend and component tests
+client/public/images/   Optimized destination photographs
+server/src/             Express API, models, authentication and production hosting
+server/scripts/         Explicit provisioning and sample-data commands
+server/test/            Isolated integration and deployment tests
+.github/workflows/      Continuous integration
+render.yaml             Optional hosting configuration
 ```
 
-## API endpoints
+## Security and launch requirements
 
-### `GET /api/health`
+- Keep database credentials, JWT secrets, staff passwords and tokens out of Git. Local environment files are ignored.
+- Public registration cannot grant staff access; roles are checked against MongoDB.
+- Production cookies are HttpOnly, Secure and SameSite=Lax. Browser writes reject foreign origins.
+- The trusted proxy hop count must match the actual network topology for correct per-client rate limiting.
+- Seat changes and reservation statuses are protected by MongoDB transactions.
+- `/api/health` returns 200 when connected and 503 when the database is unavailable.
+- Before business launch: supply verified contacts and approved policies, replace test access/data deliberately, configure backups/recovery and complete hosted/mobile acceptance tests.
+- Source preparation is not a claim of a deployed or fully audited production service. No verified live URL is currently recorded.
 
-Returns API availability information.
+## Documentation
 
-Example response:
+- [API reference](docs-api.md)
+- [Deployment and operations](DEPLOYMENT.md)
+- [Photo sources and licenses](PHOTO-CREDITS.md)
 
-```json
-{
-  "success": true,
-  "message": "WanderWays API is running",
-  "timestamp": "2026-10-09T12:00:00.000Z",
-  "database": "connected"
-}
-```
-
-## Roadmap
-
-1. Project scaffold and landing page
-2. Tour and booking data models with public tours API
-3. Customer/staff authentication and protected routes
-4. Customer booking flow and staff reservation dashboard
-5. Security hardening, automated testing, deployment, and hand-over
-
-## Security
-
-Environment secrets must stay in local `.env` files or deployment-provider settings. Never commit MongoDB credentials, JWT secrets, or real user passwords.
+Photography illustrates destinations, not guaranteed weather, accommodation or itinerary inclusions.

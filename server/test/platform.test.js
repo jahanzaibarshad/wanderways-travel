@@ -36,7 +36,7 @@ const bookingBody = (overrides = {}) => ({
 });
 
 beforeAll(async () => {
-  testPath = await mkdtemp(join(process.env.DEMO_DB_ROOT || tmpdir(), 'wanderways-test-'));
+  testPath = await mkdtemp(join(process.env.TEST_DB_ROOT || tmpdir(), 'wanderways-test-'));
   database = await MongoMemoryReplSet.create({
     instanceOpts: [{ dbPath: testPath }],
     replSet: { count: 1, storageEngine: 'wiredTiger' },
@@ -65,7 +65,7 @@ afterAll(async () => {
   if (testPath) await rm(testPath, { recursive: true, force: true });
 });
 
-describe('Task 2: models and public tours', () => {
+describe('Models and public tours', () => {
   test('health reports database connectivity', async () => {
     const response = await request(app).get('/api/health');
     expect(response.status).toBe(200);
@@ -114,7 +114,7 @@ describe('Task 2: models and public tours', () => {
   });
 });
 
-describe('Task 3: customer and staff authentication', () => {
+describe('Customer and staff authentication', () => {
   test('registration hashes passwords and never exposes them', async () => {
     const stored = await User.findById(customerId).select('+password');
     expect(stored.password).not.toBe(details.password);
@@ -304,7 +304,7 @@ describe('Protected reservations and capacity', () => {
   });
 });
 
-describe('Task 4: staff management and customer confirmation', () => {
+describe('Staff management and customer confirmation', () => {
   let reservation;
   beforeAll(async () => {
     const response = await customer.post('/api/bookings').send(bookingBody({ guests: 1 }));
